@@ -21,11 +21,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         img = findViewById(R.id.imageViewOfCamera);
-        String url = "https://wowmart.vn/wp-content/uploads/2019/04/glide-oralb-advanced-multi-protection-floss-clear-mint-44m-6-pack-knw.jpg";
         DatabaseHelper db = new DatabaseHelper(this);
         imageList = db.getImages();
         loadImage();
-
 
         btnNext = findViewById(R.id.btnNext);
         btnNext.setOnClickListener(view ->{

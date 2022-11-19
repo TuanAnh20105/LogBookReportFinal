@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.webkit.URLUtil;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -35,15 +37,30 @@ public class AddImage extends AppCompatActivity {
         });
         btnAdd.setOnClickListener(view ->{
             DatabaseHelper db = new DatabaseHelper(this);
-            db.insertImage(txt.getText().toString());
-            Toast.makeText(this, "Done", Toast.LENGTH_SHORT).show();
+            if(checkValidation() == false)
+            {
+                db.insertImage(txt.getText().toString());
+                Toast.makeText(this, "Done", Toast.LENGTH_SHORT).show();
+            }
+            else
+            {
+                Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show();
+            }
         });
-
-
         imgHome.setOnClickListener(view ->{
             Intent i = new Intent(AddImage.this,MainActivity.class);
             startActivity(i);
         });
+    }
+    public  boolean checkValidation()
+    {
+
+        if(TextUtils.isEmpty(txt.getText().toString()) || !URLUtil.isValidUrl(txt.getText().toString()))
+        {
+            txt.setError("URL not null or invalid");
+            return true;
+        }
+        return false;
     }
 
 }
