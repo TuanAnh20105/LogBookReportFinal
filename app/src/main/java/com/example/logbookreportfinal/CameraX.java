@@ -11,13 +11,10 @@ import androidx.camera.core.Preview;
 import androidx.camera.core.VideoCapture;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.LifecycleOwner;
 
 import android.annotation.SuppressLint;
-import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -28,9 +25,7 @@ import android.widget.Toast;
 
 import com.google.common.util.concurrent.ListenableFuture;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
@@ -102,35 +97,19 @@ public class CameraX extends AppCompatActivity implements ImageAnalysis.Analyzer
         },ContextCompat.getMainExecutor(this));
     }
     @SuppressLint("RestrictedApi")
-    private void startCameraX(ProcessCameraProvider cameraProvider) {
-        cameraProvider.unbindAll();
-        CameraSelector cameraSelector = new CameraSelector.Builder().requireLensFacing(CameraSelector.LENS_FACING_BACK).build();
+    private void startCameraX(ProcessCameraProvider cProvider) {
+        cProvider.unbindAll();
+        CameraSelector cSelector = new CameraSelector.Builder().requireLensFacing(CameraSelector.LENS_FACING_BACK).build();
         Preview pv = new Preview.Builder().build();
         pv.setSurfaceProvider(previewView.getSurfaceProvider());
         imageCapture = new ImageCapture.Builder().setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY).build();
         videoCapture= new VideoCapture.Builder().setVideoFrameRate(30).build();
-        ImageAnalysis imageAnalysis = new ImageAnalysis.Builder().setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST).build();
-        imageAnalysis.setAnalyzer(ex,this);
-        cameraProvider.bindToLifecycle((LifecycleOwner) this,cameraSelector,pv,imageCapture,videoCapture);
+        ImageAnalysis iAnalysis = new ImageAnalysis.Builder().setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST).build();
+        iAnalysis.setAnalyzer(ex,this);
+        cProvider.bindToLifecycle((LifecycleOwner) this, cSelector,pv,imageCapture,videoCapture);
 
     }
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String permission[], int[] grantResults)
-    {
-        super.onRequestPermissionsResult(requestCode,permission, grantResults);
-        switch (requestCode)
-        {
-            case REQUEST_CODE_PERMISSIONS:
-                if(grantResults.length > 0 && grantResults[0]== PackageManager.PERMISSION_GRANTED)
-                {
-                    Toast.makeText(this, "Permissions granted", Toast.LENGTH_SHORT).show();
-                }
-                else
-                {
-                    Toast.makeText(this, "Permissions denied", Toast.LENGTH_SHORT).show();
-                }
-        }
-    }
+
 
 
 
@@ -138,10 +117,5 @@ public class CameraX extends AppCompatActivity implements ImageAnalysis.Analyzer
     public void analyze(@NonNull ImageProxy image)
     {
         image.close();
-    }
-
-    @Override
-    public void onPointerCaptureChanged(boolean hasCapture) {
-        super.onPointerCaptureChanged(hasCapture);
     }
 }
